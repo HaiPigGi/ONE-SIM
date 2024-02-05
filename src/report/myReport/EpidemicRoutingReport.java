@@ -1,4 +1,4 @@
-package report;
+package report.myReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +8,9 @@ import java.util.Map;
 import core.DTNHost;
 import core.Message;
 import core.MessageListener;
+import report.Report;
 
-public class myReport extends Report implements MessageListener {
+public class EpidemicRoutingReport extends Report implements MessageListener {
 
     private Map<String, Double> creationTimes;
     private List<Double> latency;
@@ -31,7 +32,7 @@ public class myReport extends Report implements MessageListener {
      * create Consructor
      * 
      */
-    public myReport() {
+    public EpidemicRoutingReport() {
         init();
     }
 

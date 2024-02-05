@@ -3,7 +3,7 @@
 #
 
 ## Scenario settings
-Scenario.name = Testing
+Scenario.name = SprayAndWait__Report
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
@@ -52,7 +52,7 @@ Scenario.nrofHostGroups = 6
 
 # Common settings for all groups
 Group.movementModel = ShortestPathMapBasedMovement
-Group.router = SprayAndWaitTest
+Group.router = SprayAndWaitRoutes
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 # All nodes have the bluetooth interface
@@ -107,12 +107,12 @@ Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
 Report.reportDir = reports/
 # Report classes to load
-Report.report1 = myReport
+Report.myReport.report1 = sprayAndWaitReport
 Report.report2 = ContactTimesReport
 
 ## Default settings for some routers settings
 ProphetRouter.secondsInTimeUnit = 30
-SprayAndWaitRouter.nrofCopies = 6
+SprayAndWaitRouter.numberofcopies = 8
 SprayAndWaitRouter.binaryMode = true
 
 ## Optimization settings -- these affect the speed of the simulation

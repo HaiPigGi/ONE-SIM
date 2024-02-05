@@ -12,7 +12,7 @@ public class SprayAndWaitRoutes extends ActiveRouter {
 
     /** Inisiasi Variable Final */
     public static final String numberOfCopies = "numberofcopies";
-    public static final String binaryMode = "binarymode";
+    public static final String binaryMode = "binaryMode";
     public static final String SprayAndWait_nm = "SprayAndWaitRouter"; // spray And wait Name Space
     public static final String msg_count_property = SprayAndWait_nm + "." + "copies";
 
