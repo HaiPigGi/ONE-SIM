@@ -10,8 +10,8 @@ import core.Message;
 import core.MessageListener;
 import report.Report;
 
-public class sprayAndWaitReport extends Report implements MessageListener {
-    // Map to store the creation times of messages
+public class sprayAndFocusReport extends Report implements MessageListener {
+    // Map to store creation times of messages
     private Map<String, Double> creationTimes;
     // List to store message latency
     private List<Double> latency;
@@ -34,7 +34,7 @@ public class sprayAndWaitReport extends Report implements MessageListener {
     private int nrofDelivered;
 
     // Constructor
-    public sprayAndWaitReport() {
+    public sprayAndFocusReport() {
         init();
     }
 
@@ -94,7 +94,7 @@ public class sprayAndWaitReport extends Report implements MessageListener {
         }
         // Increment relayed count
         this.nrofRelayed++;
-        // If message reaches the final target, calculate and store latency and hop count
+        // If message reaches final target, calculate and store latency and hop count
         if (finalTarget) {
             this.latency.add(getSimTime() - this.creationTimes.get(m.getId()));
             this.nrofDelivered++;
@@ -109,7 +109,7 @@ public class sprayAndWaitReport extends Report implements MessageListener {
 
     // Method called when a new message is created
     public void newMessage(Message m) {
-        // Check if simulation is in the warmup phase
+        // Check if simulation is in warmup phase
         if (isWarmup()) {
             addWarmupID(m.getId());
             return;
@@ -138,7 +138,7 @@ public class sprayAndWaitReport extends Report implements MessageListener {
     @Override
     public void done() {
         // Write report statistics
-        write("My Report Of Spray And Wait Routing for some scenario " + getScenarioName() +
+        write("My Report Of Spray And Focus Routing for some scenario " + getScenarioName() +
                 "\nsim_time: " + format(getSimTime()));
         // Calculate delivery probability, response probability, and overhead ratio
         double deliveryProb = (this.nrofCreated > 0) ? (1.0 * this.nrofDelivered) / this.nrofCreated : 0;
@@ -165,9 +165,9 @@ public class sprayAndWaitReport extends Report implements MessageListener {
                 "\nrtt_avg: " + getAverage(this.rtt) +
                 "\nrtt_med: " + getMedian(this.rtt);
 
-        // Write formatted statistics to the report
+        // Write formatted statistics to report
         write(statsText);
-        // Call the superclass done() method
+        // Call superclass done() method
         super.done();
     }
 }

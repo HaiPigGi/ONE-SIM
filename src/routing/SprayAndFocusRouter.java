@@ -49,7 +49,11 @@ public class SprayAndFocusRouter extends ActiveRouter {
     public boolean createNewMessage(Message msg) {
         makeRoomForMessage(msg.getSize());
         msg.setTtl(this.msgTtl);
-        msg.addProperty(MSG_COUNT_PROPERTY, initialNumberOfCopies);
+
+        // Check if the property already exists in the message
+        if (msg.getProperty(MSG_COUNT_PROPERTY) == null) {
+            msg.addProperty(MSG_COUNT_PROPERTY, initialNumberOfCopies);
+        }
         addToMessages(msg, true);
         return true;
     }
@@ -74,7 +78,6 @@ public class SprayAndFocusRouter extends ActiveRouter {
         }
 
         // check for the fase focus
-
         for (Message msg : getMessageCollection()) {
             Integer numberOfCopies = (Integer) msg.getProperty(MSG_COUNT_PROPERTY);
 
@@ -93,6 +96,13 @@ public class SprayAndFocusRouter extends ActiveRouter {
         // Get message id
         String messageId = msg.getId();
 
+        // Log the message ID
+        System.out.println("Sending message " + messageId + " to destination node " + destination);
+
+        // Log the message ID and other relevant information
+        System.out.println("Sending message " + messageId + " from node " + this.getHost() + " to destination node "
+                + destination);
+
         // Get Router from node destination
         MessageRouter router = destination.getRouter();
 
@@ -106,6 +116,7 @@ public class SprayAndFocusRouter extends ActiveRouter {
         if (numberOfCopies != null && numberOfCopies > 1) {
             // Reduce the number of copies by half
             numberOfCopies /= 2;
+            // Update the existing property instead of adding it again
             msg.addProperty(MSG_COUNT_PROPERTY, numberOfCopies);
         }
     }

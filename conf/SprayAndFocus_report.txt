@@ -3,7 +3,7 @@
 #
 
 ## Scenario settings
-Scenario.name = default_scenario
+Scenario.name = SprayAndFocus_Report
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
@@ -45,14 +45,14 @@ Scenario.nrofHostGroups = 6
 # pois: Points Of Interest indexes and probabilities (poiIndex1, poiProb1, poiIndex2, poiProb2, ... )
 #       for ShortestPathMapBasedMovement
 # okMaps : which map nodes are OK for the group (map file indexes), default=all
-#          for all MapBasedMovent models
+#          for all MapBasedMovement models
 # routeFile: route's file path - for MapRouteMovement
 # routeType: route's type - for MapRouteMovement
 
 
 # Common settings for all groups
 Group.movementModel = ShortestPathMapBasedMovement
-Group.router = EpidemicRouter
+Group.router = SprayAndFocusRouter
 Group.bufferSize = 5M
 Group.waitTime = 0, 120
 # All nodes have the bluetooth interface
@@ -149,15 +149,16 @@ Report.nrofReports = 2
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/
+Report.reportDir = reports/sprayAndFocusReport/
 # Report classes to load
+Report.myReport.report1 = sprayAndFocusReport
 Report.report1 = MessageStatsReport
 Report.report2 = ContactTimesReport
 
+
 ## Default settings for some routers settings
 ProphetRouter.secondsInTimeUnit = 30
-SprayAndWaitRouter.nrofCopies = 6
-SprayAndWaitRouter.binaryMode = true
+SprayAndFocusRouter.number_of_copies = 8
 
 ## Optimization settings -- these affect the speed of the simulation
 ## see World class for details.

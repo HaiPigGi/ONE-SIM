@@ -23,6 +23,10 @@ import core.SimError;
 import routing.util.RoutingInfo;
 import util.Tuple;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
+
 /**
  * Superclass for message routers.
  */
@@ -104,6 +108,10 @@ public abstract class MessageRouter {
 
 	/** applications attached to the host */
 	private HashMap<String, Collection<Application>> applications = null;
+
+	/**installized the logger for debugging */
+	private static final Logger logger = Logger.getLogger(MessageRouter.class.getName());
+
 
 	/**
 	 * Constructor. Creates a new message router based on the settings in
@@ -311,12 +319,16 @@ public abstract class MessageRouter {
 	public void sendMessage(String id, DTNHost to) {
 		Message m = getMessage(id);
 		Message m2;
-		if (m == null) throw new SimError("no message for id " +
-				id + " to send at " + this.host);
-
-		m2 = m.replicate();	// send a replicate of the message
+		if (m == null) {
+			String errorMessage = "No message for id " + id + " to send at " + this.host;
+			logger.log(Level.SEVERE, errorMessage);
+			throw new SimError(errorMessage);
+		}
+	
+		m2 = m.replicate();    // send a replicate of the message
 		to.receiveMessage(m2, this.host);
 	}
+	
 
 	/**
 	 * Requests for deliverable message from this router to be sent trough a

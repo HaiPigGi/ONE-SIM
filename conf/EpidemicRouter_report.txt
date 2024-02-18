@@ -3,7 +3,7 @@
 #
 
 ## Scenario settings
-Scenario.name = default_scenario
+Scenario.name = EpidemicRouter__Report
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
@@ -149,8 +149,9 @@ Report.nrofReports = 2
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/
+Report.reportDir = reports/EpidemicRouterReport/
 # Report classes to load
+Report.myReport.report1 = EpidemicRoutingReport
 Report.report1 = MessageStatsReport
 Report.report2 = ContactTimesReport
 
