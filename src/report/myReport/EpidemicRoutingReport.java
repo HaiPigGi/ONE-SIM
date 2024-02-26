@@ -65,11 +65,7 @@ public class EpidemicRoutingReport extends Report implements MessageListener {
         }
         if (dropped) {
             this.nrofDropped++;
-        } else {
-            this.nrofRemoved++;
         }
-
-        this.msgBufferTimes.add(getSimTime() - m.getReceiveTime());
     }
 
     // MessageListener method to handle aborted message transfers
@@ -116,7 +112,7 @@ public class EpidemicRoutingReport extends Report implements MessageListener {
             return;
         }
         this.nrofStarted++;
-    } 
+    }
 
     // Method called when the simulation is done to generate the report
     @Override
@@ -146,18 +142,6 @@ public class EpidemicRoutingReport extends Report implements MessageListener {
                 "\nrelayed: " + this.nrofRelayed +
                 "\naborted: " + this.nrofAborted +
                 "\ndropped: " + this.nrofDropped +
-                "\nremoved: " + this.nrofRemoved +
-                "\ndelivered: " + this.nrofDelivered +
-                "\ndelivery_prob: " + format(deliveryProb) +
-                "\nresponse_prob: " + format(responseProb) +
-                "\noverhead_ratio: " + format(overHead) +
-                "\nlatency_avg: " + getAverage(this.latency) +
-                "\nlatency_med: " + getMedian(this.latency) +
-                "\nhopcount_avg: " + getIntAverage(this.hopCount) +
-                "\nhopcount_med: " + getIntMedian(this.hopCount) +
-                "\nbuffertime_avg: " + getAverage(this.msgBufferTimes) +
-                "\nbuffertime_med: " + getMedian(this.msgBufferTimes) +
-                "\nrtt_avg: " + getAverage(this.rtt) +
                 "\nrtt_med: " + getMedian(this.rtt);
 
         // Write the report text
