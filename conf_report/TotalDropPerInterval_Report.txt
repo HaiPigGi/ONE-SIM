@@ -72,6 +72,6 @@ Report.nrofReports = 1
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/Total_Drop_By_Node_Per_Interval/
+Report.reportDir = reports/Total_Drop_By_Node_Per_Intervals/
 # Report classes to load
-Report.report1 = TotalDroppedReportByIntervalReport
+Report.report1 = droppPerIntervalReport
