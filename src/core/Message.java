@@ -53,6 +53,9 @@ public class Message implements Comparable<Message> {
 	/** Application ID of the application that created the message */
 	private String appID;
 
+	// New field to store hosts the message has been transferred to
+    private List<DTNHost> transferredToHosts;
+
 	static {
 		reset();
 		DTNSim.registerForReset(Message.class.getCanonicalName());
@@ -82,6 +85,7 @@ public class Message implements Comparable<Message> {
 		this.requestMsg = null;
 		this.properties = null;
 		this.appID = null;
+		this.transferredToHosts = new ArrayList<>();
 
 		Message.nextUniqueId++;
 		addNodeOnPath(from);
@@ -104,6 +108,7 @@ public class Message implements Comparable<Message> {
 	public DTNHost getTo() {
 		return this.to;
 	}
+	
 
 	/**
 	 * Returns the ID of the message
@@ -394,5 +399,17 @@ public void addProperty(String key, Object value) throws SimError {
 	public void setAppID(String appID) {
 		this.appID = appID;
 	}
+
+	   // New method to add host to transferredToHosts list
+	   public void addTransferredToHost(DTNHost host) {
+        transferredToHosts.add(host);
+    }
+
+	// New method to check if the message has been transferred to a specific host
+    public boolean isTransferredTo(DTNHost host) {
+        return transferredToHosts.contains(host);
+    }
+
+	
 
 }
