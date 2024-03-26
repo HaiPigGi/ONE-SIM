@@ -1,4 +1,4 @@
-package report.myReport;
+package report;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,6 @@ import core.DTNHost;
 import core.Message;
 import core.MessageListener;
 import core.SimClock;
-import report.Report;
 
 public class TotalDroppedReportByIntervalReport extends Report implements MessageListener {
     private Map<DTNHost, Integer> droppedMessagesByHost;
