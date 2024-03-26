@@ -1,0 +1,295 @@
+package routing;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import core.DTNHost;
+import core.Connection;
+import core.Message;
+import core.Settings;
+
+public class sprayAndWaitWithTransitivity extends ActiveRouter {
+
+    /** Inisiasi Variable Final */
+    public static final String numberOfCopies = "numberofcopies";
+    public static final String binaryMode = "binaryMode";
+    public static final String SprayAndWait_nm = "sprayAndwaitRoutertrainsitivity"; // spray And wait Name Space
+    public static final String msg_count_property = SprayAndWait_nm + "." + "copies";
+
+    public int initalNumberOfCopies;
+    public boolean isBinary;
+
+    /** Make the Constructor */
+    public sprayAndWaitWithTransitivity(Settings setting) {
+        super(setting);
+
+        // make an object for setting
+        Settings SprayWaitSet = new Settings(SprayAndWait_nm);
+
+        // make the initialNumberOfCopies
+        initalNumberOfCopies = SprayWaitSet.getInt(numberOfCopies);
+        isBinary = SprayWaitSet.getBoolean(binaryMode);
+    }
+
+    /**
+     * make the Copy Constructor
+     * 
+     * @param snw
+     */
+    protected sprayAndWaitWithTransitivity(sprayAndWaitWithTransitivity snw) {
+        super(snw);
+
+        initalNumberOfCopies = snw.initalNumberOfCopies;
+        isBinary = snw.isBinary;
+    }
+
+    /* Make The Receving Message */
+    @Override
+    public int receiveMessage(Message msg, DTNHost from) {
+        return super.receiveMessage(msg, from);
+    }
+
+    @Override
+    public Message messageTransferred(String id, DTNHost from) {
+        Message msg = super.messageTransferred(id, from);
+        Integer numberOfCopies = (Integer) msg.getProperty(msg_count_property);
+
+        assert numberOfCopies != null : "is Not Spray And Wait Message" + msg;
+
+        // Check if the copies is goes to binary or not
+        if (isBinary) {
+            numberOfCopies = (int) Math.floor(numberOfCopies / 2.0);
+        } else {
+            // the standard code with single copy of msg
+            numberOfCopies = 1;
+        }
+        msg.updateProperty(msg_count_property, numberOfCopies);
+
+        return msg;
+
+    }
+
+    @Override
+    /**
+     * Membuat pesan baru dan mengirimkannya ke tujuan yang sesuai berdasarkan
+     * transitivity.
+     * 
+     * @param msg Pesan yang akan dibuat dan dikirim
+     * @return true jika pesan berhasil dibuat dan dikirim, false jika tidak
+     */
+    public boolean createNewMessage(Message msg) {
+        // Membuat ruang untuk pesan dalam buffer host
+        makeRoomForMessage(msg.getSize());
+
+        // Mengatur time-to-live (TTL) pesan dan jumlah salinan awal
+        msg.setTtl(this.msgTtl);
+        msg.addProperty(msg_count_property, new Integer(initalNumberOfCopies));
+
+        // Tambahkan pesan ke dalam daftar pesan
+        addToMessages(msg, true);
+
+        // Memilih node tujuan awal berdasarkan transitivity
+        DTNHost initialDestination = selectinitialDestination(msg, getConnections());
+        DTNHost source = msg.getFrom();
+
+        // Memeriksa destinasi dan sumber pesan dengan debug
+        System.out.println("Pesan dengan ID: " + msg.getId() + " dari " + source + " ke " + initialDestination);
+
+        // System.out.println("cek initial destinasi : "+initialDestination);
+
+        // Jika node tujuan transitive ditemukan, kirim pesan ke node tersebut
+        if (initialDestination != null) {
+            // Jika node tujuan awal adalah node yang sama dengan tujuan pesan,
+            // kirim pesan langsung ke tujuan
+            sendMessage(msg.getId(), initialDestination);
+            // pesan berhasil dibuat dan dikirimkan
+            return true;
+        } else {
+            // jika tidak, cari node transitive yang lebih baik
+            DTNHost transiiveDestination = selectTransitiveDestination(msg, initialDestination, getConnections());
+            // System.out.println("cari node transitive : " + transiiveDestination);
+
+            // jika node transitive ditemukan, kirim pesan ke node tansitive
+            if (transiiveDestination != null) {
+                // System.out.println("transitive ditemukan" + msg.getId() + " ke " +
+                // msg.getTo());
+                sendMessage(msg.getId(), transiiveDestination);
+            } else {
+                // jika tidak ada node transitive yang ditemukan, kirim pesan langsung ke tujuan
+                // System.out.println("kirim langsung" + msg.getId() + " ke " + msg.getTo());
+                sendMessage(msg.getId(), msg.getTo());
+            }
+            // pesan berhasil dibuat dan dikirimkan
+            return true;
+        }
+    }
+
+    /**
+     * Memilih node tujuan berdasarkan transitivity, yaitu memeriksa apakah terdapat
+     * koneksi dari host sumber
+     * ke host tujuan secara langsung atau melalui node tetangga.
+     * 
+     * @param msg         Pesan yang akan dikirim
+     * @param connections Daftar koneksi yang tersedia di host ini
+     * @return Node tujuan yang dipilih berdasarkan transitivity, atau null jika
+     *         tidak ada node yang memenuhi kriteria
+     */
+    private DTNHost selectTransitiveDestination(Message msg, DTNHost initialDestination, List<Connection> connections) {
+        // Mendapatkan host sumber dan tujuan pesan
+        DTNHost destination = msg.getTo();
+
+        // Memeriksa apakah initialDestination dan destination tidak null, dan apakah
+        // initialDestination sama dengan destination
+        if (initialDestination != null && destination != null && initialDestination.equals(destination)) {
+            System.out.println("Initial destination is same as message destination: " + destination);
+            return destination;
+        }
+
+        // Lakukan iterasi melalui daftar koneksi yang tersedia
+        for (Connection connection : connections) {
+            // Mendapatkan host lain yang terhubung ke sumber pesan
+            DTNHost neighbor = connection.getOtherNode(initialDestination);
+
+            // Cek apakah host terhubung memiliki koneksi langsung ke tujuan pesan
+            if (neighbor.isConnectedToDestination(destination)) {
+                System.out.println("Transitive destination found: " + neighbor);
+                return neighbor;
+            }
+        }
+
+        // Jika sampai di sini, artinya tidak ada node transitive yang ditemukan
+        // System.out.println("No transitive destination found");
+        return null;
+    }
+
+    /**
+     * Memilih node tujuan awal berdasarkan transitivity.
+     * 
+     * @param msg         Pesan yang akan dikirim
+     * @param connections Daftar koneksi yang tersedia di host ini
+     * @return Node tujuan awal yang dipilih berdasarkan transitivity, atau null
+     *         jika tidak ada node yang memenuhi kriteria
+     */
+    private DTNHost selectinitialDestination(Message msg, List<Connection> connections) {
+        // Mendapatkan Host sumber dan tujuan pesan
+        DTNHost source = msg.getFrom();
+        DTNHost destination = msg.getTo();
+        // System.out.println("cek source : " + source);
+        // System.out.println("cek destination : " + destination);
+        // cek jika node sumber memiliki koneksi langsung ke tujuan
+        if (source.isConnectedToDestination(destination)) {
+            return destination;
+        }
+
+        // lakukan iterasi melalui daftar koneksi yang tersedia
+        for (Connection connection : connections) {
+            // mendapatkan host lain yang terhubung
+            DTNHost neighbor = connection.getOtherNode(source);
+
+            // cek apakah host terhubung memiliki koneksi ke destinasi
+            if (neighbor.isConnectedToDestination(destination)) {
+                return neighbor;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if (!canStartTransfer() || isTransferring()) {
+            return;
+        }
+
+        if (exchangeDeliverableMessages() != null) {
+            return;
+        }
+
+        @SuppressWarnings(value = "unchecked")
+        List<Message> coppiesLeft = sortByQueueMode(getMessagesWithCopiesLeft());
+
+        if (coppiesLeft.size() > 0) {
+            this.tryMessagesToConnections(coppiesLeft, getConnections());
+        }
+    }
+
+    // private DTNHost selectTransitiveForwardingNode(Message msg, List<Connection>
+    // connections) {
+    // DTNHost source = msg.getFrom();
+    // DTNHost destination = msg.getTo();
+
+    // // Cek apakah node sumber memiliki koneksi langsung dengan tujuan
+    // if (source.isConnectedToDestination(destination)) {
+    // return destination; // Jika ya, kembalikan node tujuan sebagai node yang akan
+    // meneruskan pesan
+    // }
+
+    // // Cari node tetangga yang memiliki koneksi langsung dengan tujuan
+    // for (Connection connection : connections) {
+    // DTNHost connectedHost = connection.getOtherNode(source);
+    // if (connectedHost.isConnectedToDestination(destination)) {
+    // return connectedHost; // Jika ditemukan node tetangga yang terhubung dengan
+    // tujuan, kembalikan node
+    // // tetangga tersebut
+    // }
+    // }
+
+    // return null; // Jika tidak ada node yang memenuhi kriteria transitivity,
+    // kembalikan null
+    // }
+
+    /**
+     * Creates and returns a list of messages this router is currently
+     * carrying and still has copies left to distribute (nrof copies > 1).
+     * 
+     */
+    protected List<Message> getMessagesWithCopiesLeft() {
+        List<Message> list = new ArrayList<Message>();
+
+        // create loop for Message
+        for (Message msg : getMessageCollection()) {
+            Integer numberOfCopies = (Integer) msg.getProperty(msg_count_property);
+            assert numberOfCopies != null : "spray And Wait " + msg +
+                    "didn't have " + "Number of copies";
+            if (numberOfCopies > 1) {
+                list.add(msg);
+            }
+        }
+        return list;
+
+    }
+
+    /**
+     * Called just before a transfer is finalized (by
+     * {@link ActiveRouter#update()}).
+     * Reduces the number of copies we have left for a message.
+     * In binary Spray and Wait, sending host is left with floor(n/2) copies,
+     * but in standard mode, nrof copies left is reduced by one.
+     */
+    @Override
+    protected void transferDone(Connection con) {
+        Message msg = getMessage(con.getMessage().getId());
+
+        if (msg == null) {
+            return;
+        }
+
+        Integer numberOfCopies = (Integer) msg.getProperty(msg_count_property);
+
+        // mengurangi jumlah salinan pesan sesuai dengan mode yang dipilih
+        if (isBinary) {
+            numberOfCopies = (int) Math.floor(numberOfCopies / 2.0);
+        } else {
+            numberOfCopies--;
+        }
+        msg.updateProperty(msg_count_property, numberOfCopies);
+
+    }
+
+    @Override
+    public sprayAndWaitWithTransitivity replicate() {
+        return new sprayAndWaitWithTransitivity(this);
+    }
+
+}

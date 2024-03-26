@@ -3,7 +3,7 @@
 #
 
 ## Scenario settings
-Scenario.name = EpidemicRouter
+Scenario.name = Spray_And_wait_Transitivity
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
@@ -21,17 +21,17 @@ highspeedInterface.transmitSpeed = 10M
 highspeedInterface.transmitRange = 1000
 
 # Define 6 different node groups
-Scenario.nrofHostGroups =1
+Scenario.nrofHostGroups = 3
+
 
 # Common settings for all groups
 Group.movementModel = RandomWaypoint
-Group.router = EpidemicRouter
+Group.router = sprayAndWaitWithTransitivity
 Group.bufferSize = 30M
 Group.waitTime = 0, 120
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = 1
 Group.interface1 = btInterface
-Group.sendQueue= 3
 
 Group.nrofHosts = 60
 
@@ -97,7 +97,7 @@ Report.nrofReports = 1
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/EpidemicRouter/
+Report.reportDir = reports/sprayAndWaitWithTransitivity/
 # Report classes to load
 Report.report1 = sprayAndWait_WithTransitivity_report
 

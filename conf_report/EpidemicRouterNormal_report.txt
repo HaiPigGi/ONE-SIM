@@ -31,8 +31,6 @@ Group.waitTime = 0, 120
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = 1
 Group.interface1 = btInterface
-Group.sendQueue= 3
-
 Group.nrofHosts = 60
 
 # group1 (pedestrians) specific settings
@@ -97,7 +95,7 @@ Report.nrofReports = 1
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/EpidemicRouter/
+Report.reportDir = reports/EpidemicRouterNormal/
 # Report classes to load
 Report.report1 = sprayAndWait_WithTransitivity_report
 
