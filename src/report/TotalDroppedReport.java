@@ -1,4 +1,4 @@
-package report.myReport;
+package report;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,6 @@ import java.util.Map;
 import core.DTNHost;
 import core.Message;
 import core.MessageListener;
-import report.Report;
 
 public class TotalDroppedReport extends Report implements MessageListener {
     private Map<DTNHost, Integer> droppedMessagesByHost;
@@ -37,7 +36,7 @@ public class TotalDroppedReport extends Report implements MessageListener {
         }
         if (dropped) {
             if (droppedMessagesByHost.containsKey(where)) {
-                // jika kunci (host) sudah ada, increment nilai untuk kunci tersebut
+                // jika kunci (host) sudah ada, increment nilai untuk kunci tersebut 
                 droppedMessagesByHost.put(where, droppedMessagesByHost.get(where) + 1);
             } else {
                 // jika kunci (host) belum ada, masukkan kunci tersebut dengan nilai 1

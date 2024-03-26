@@ -3,7 +3,7 @@
 #
 
 ## Scenario settings
-Scenario.name = EpidemicRouter
+Scenario.name = Buffer_Occupancy
 Scenario.simulateConnections = true
 Scenario.updateInterval = 0.1
 # 43200s == 12h
@@ -15,13 +15,9 @@ btInterface.type = SimpleBroadcastInterface
 btInterface.transmitSpeed = 250k
 btInterface.transmitRange = 10
 
-# High speed, long range, interface for group 4
-highspeedInterface.type = SimpleBroadcastInterface
-highspeedInterface.transmitSpeed = 10M
-highspeedInterface.transmitRange = 1000
-
 # Define 6 different node groups
-Scenario.nrofHostGroups =1
+Scenario.nrofHostGroups = 1
+
 
 # Common settings for all groups
 Group.movementModel = RandomWaypoint
@@ -31,7 +27,7 @@ Group.waitTime = 0, 120
 # All nodes have the bluetooth interface
 Group.nrofInterfaces = 1
 Group.interface1 = btInterface
-Group.sendQueue= 3
+
 
 Group.nrofHosts = 60
 
@@ -48,19 +44,6 @@ Group2.speed = 2.7, 13.9
 # another group of pedestrians
 Group3.groupID = w
 
-# The Tram groups
-Group4.groupID = t
-Group4.bufferSize = 50M
-Group4.movementModel = MapRouteMovement
-Group4.routeFile = data/tram3.wkt
-Group4.routeType = 1
-Group4.waitTime = 10, 30
-Group4.speed = 7, 10
-Group4.nrofHosts = 2
-Group4.nrofInterfaces = 2
-Group4.interface1 = btInterface
-Group4.interface2 = highspeedInterface
-
 
 ## Message creation parameters
 # How many event generators
@@ -73,7 +56,7 @@ Events1.interval = 25,35
 # Message sizes (500kB - 1MB)
 Events1.size = 500k,0.5M
 # range of message source/destination addresses
-Events1.hosts = 0,59
+Events1.hosts = 0,49
 # Message ID prefix
 Events1.prefix = M
 
@@ -82,27 +65,13 @@ Events1.prefix = M
 # seed for movement models' pseudo random number generator (default = 0)
 MovementModel.rngSeed = 1
 # World's size for Movement Models without implicit size (width, height; meters)
-MovementModel.worldSize = 2000, 1000
-
-## Map based movement -movement model specific settings
-MapBasedMovement.nrofMapFiles = 4
-
-MapBasedMovement.mapFile1 = data/roads.wkt
-MapBasedMovement.mapFile2 = data/main_roads.wkt
-MapBasedMovement.mapFile3 = data/pedestrian_paths.wkt
-MapBasedMovement.mapFile4 = data/shops.wkt
+MovementModel.worldSize = 500, 200
 
 # how many reports to load
 Report.nrofReports = 1
 # length of the warm up period (simulated seconds)
 Report.warmup = 0
 # default directory of reports (can be overridden per Report with output setting)
-Report.reportDir = reports/EpidemicRouter/
+Report.reportDir = reports/Drop_Per_Interval_V2/
 # Report classes to load
-Report.report1 = sprayAndWait_WithTransitivity_report
-
-
-## Default settings for some routers settings
-ProphetRouter.secondsInTimeUnit = 30
-sprayAndwaitRoutertrainsitivity.numberofcopies = 8
-sprayAndwaitRoutertrainsitivity.binaryMode = false
+Report.report1 = DropPerIntervalWithBuffOcV2

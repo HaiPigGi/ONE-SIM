@@ -1,4 +1,4 @@
-package report.myReport;
+package report;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
 import core.DTNHost;
 import core.Message;
 import core.MessageListener;
-import report.Report;
 
 public class sprayAndWaitReport extends Report implements MessageListener {
     // Map to store the creation times of messages
@@ -94,7 +93,8 @@ public class sprayAndWaitReport extends Report implements MessageListener {
         }
         // Increment relayed count
         this.nrofRelayed++;
-        // If message reaches the final target, calculate and store latency and hop count
+        // If message reaches the final target, calculate and store latency and hop
+        // count
         if (finalTarget) {
             this.latency.add(getSimTime() - this.creationTimes.get(m.getId()));
             this.nrofDelivered++;
@@ -138,32 +138,17 @@ public class sprayAndWaitReport extends Report implements MessageListener {
     @Override
     public void done() {
         // Write report statistics
-        write("My Report Of Spray And Wait Routing for some scenario " + getScenarioName() +
+        write("My Report Of Spray And Wait Routing " + getScenarioName() +
                 "\nsim_time: " + format(getSimTime()));
-        // Calculate delivery probability, response probability, and overhead ratio
+        // Calculate delivery probability
         double deliveryProb = (this.nrofCreated > 0) ? (1.0 * this.nrofDelivered) / this.nrofCreated : 0;
-        double responseProb = (this.nrofResponseReqCreated > 0) ? (1.0 * this.nrofResponseDelivered) / this.nrofResponseReqCreated : 0;
-        double overHead = (this.nrofDelivered > 0) ? (1.0 * (this.nrofRelayed - this.nrofDelivered)) / this.nrofDelivered : Double.NaN;
-
         // Format report statistics
         String statsText = "created: " + this.nrofCreated +
                 "\nstarted: " + this.nrofStarted +
                 "\nrelayed: " + this.nrofRelayed +
-                "\naborted: " + this.nrofAborted +
                 "\ndropped: " + this.nrofDropped +
-                "\nremoved: " + this.nrofRemoved +
                 "\ndelivered: " + this.nrofDelivered +
-                "\ndelivery_prob: " + format(deliveryProb) +
-                "\nresponse_prob: " + format(responseProb) +
-                "\noverhead_ratio: " + format(overHead) +
-                "\nlatency_avg: " + getAverage(this.latency) +
-                "\nlatency_med: " + getMedian(this.latency) +
-                "\nhopcount_avg: " + getIntAverage(this.hopCount) +
-                "\nhopcount_med: " + getIntMedian(this.hopCount) +
-                "\nbuffertime_avg: " + getAverage(this.msgBufferTimes) +
-                "\nbuffertime_med: " + getMedian(this.msgBufferTimes) +
-                "\nrtt_avg: " + getAverage(this.rtt) +
-                "\nrtt_med: " + getMedian(this.rtt);
+                "\ndelivery_prob: " + format(deliveryProb);
 
         // Write formatted statistics to the report
         write(statsText);
